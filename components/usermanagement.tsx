@@ -51,7 +51,7 @@ export default function UserManagement() {
   ];
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center p-4 sm:p-6">
       {/* Header */}
       <div className="flex justify-between w-full max-w-4xl mb-4">
         <p className="text-lg font-semibold">User Management</p>
@@ -60,11 +60,12 @@ export default function UserManagement() {
           alt="dropdown icon"
           width={40}
           height={40}
+          className="w-6 h-6 sm:w-10 sm:h-10"
         />
       </div>
 
-      <div className="w-full max-w-4xl">
-        <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] text-left text-[12px] text-neutral-600 font-light pb-3 border-b border-gray-300">
+      <div className="w-full max-w-4xl overflow-x-auto">
+        <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] text-left text-[12px] text-neutral-600 font-light pb-3 border-b border-gray-300 min-w-[600px]">
           <span></span>
           <span>Username</span>
           <span>Date Joined</span>
@@ -73,21 +74,20 @@ export default function UserManagement() {
           <span>Shop Value</span>
         </div>
 
-        <div className="space-y-2 mt-4 text-sm">
+        <div className="space-y-2 mt-4 text-sm min-w-[600px]">
           {users.map((user, index) => (
             <div
               key={index}
               className={`grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 p-3 rounded-lg ${user.bgColor}`}
             >
-              {/* SVG Icon */}
               <Image
                 src="/tableicon.svg"
                 width={20}
                 height={20}
                 alt="table icon"
+                className="w-5 h-5"
               />
 
-              {/* User Info */}
               <span>{user.username}</span>
               <span>{user.dateJoined}</span>
               <span>{user.listings}</span>

@@ -289,7 +289,6 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Other menu items */}
             {[
               { id: "account" as keyof ExpandedSections, icon: "/account.svg", label: "Account" },
               { id: "corporate" as keyof ExpandedSections, icon: "/corporate.svg", label: "Corporate" },
@@ -339,7 +338,6 @@ export default function Dashboard() {
       </main>
 
       <aside className="hidden lg:block w-[280px] h-screen p-4 gap-4 border-l border-gray-300 overflow-y-auto">
-        {/* Notifications */}
         <div className="flex flex-col gap-2">
           <p className="py-[8px] px-[4px]">Notifications</p>
           <div className="flex flex-col gap-2">
@@ -385,7 +383,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Activities */}
         <div className="flex flex-col gap-2 my-4">
           <p className="py-[8px] px-[4px]">Activities</p>
           <div className="flex flex-col gap-2">

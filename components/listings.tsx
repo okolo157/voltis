@@ -18,15 +18,15 @@ export default function Listings() {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center pb-4 border-b border-gray-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-gray-300 gap-2 sm:gap-4">
         <h2 className="text-lg font-semibold">Listings</h2>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           <input
             type="text"
             placeholder="Search"
-            className="border rounded-md p-2 text-xs w-48"
+            className="border rounded-md p-2 text-xs w-full sm:w-48"
           />
           <button className="text-gray-600 text-xs">Filter</button>
           <button className="text-gray-600 text-xs">Sort</button>
@@ -43,8 +43,8 @@ export default function Listings() {
       </div>
 
       {viewMode === "table" ? (
-        <>
-          <div className="grid grid-cols-6 text-gray-500 text-xs font-medium py-2 border-b">
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-6 text-gray-500 text-xs font-medium py-2 border-b min-w-[600px]">
             <span>Title</span>
             <span>Brand</span>
             <span>Condition</span>
@@ -53,8 +53,7 @@ export default function Listings() {
             <span>Uploaded by</span>
           </div>
 
-          {/* Table Rows */}
-          <div className="divide-y">
+          <div className="divide-y min-w-[600px]">
             {listings.map((item, index) => (
               <div
                 key={index}
@@ -86,9 +85,9 @@ export default function Listings() {
               </div>
             ))}
           </div>
-        </>
+        </div>
       ) : (
-        <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {listings.map((item, index) => (
             <div
               key={index}
@@ -99,7 +98,7 @@ export default function Listings() {
                 width={200}
                 height={100}
                 alt={item.title}
-                className=""
+                className="w-full h-auto"
               />
               <h3 className="font-semibold mt-2">{item.title}</h3>
               <p className="text-gray-500">
