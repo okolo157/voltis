@@ -63,13 +63,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-[1024px] w-[1440px] bg-[#E3AAE7] flex flex-col items-center justify-center">
-      <div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#E3AAE7] p-4">
+      <div className="w-full max-w-md">
         <h2 className="text-[14px] font-semibold mb-4 text-black text-left">
           Admin Login
         </h2>
         <form
-          className="w-[335px] bg-white shadow-xl rounded-[8px] p-7 text-black"
+          className="w-full bg-white shadow-xl rounded-[8px] p-7 text-black"
           onSubmit={handleSubmit}
         >
           <div className="mb-4">
