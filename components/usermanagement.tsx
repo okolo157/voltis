@@ -40,7 +40,7 @@ export default function UserManagement() {
 
     async function fetchUsers() {
       try {
-        const response = await fetch("https://prelura.com/graphql/", {
+        const response = await fetch("/graphql", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

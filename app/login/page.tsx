@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   const getAuthToken = async (username: string, password: string) => {
     try {
-      const response = await fetch("https://prelura.com/graphql/", {
+      const response = await fetch("/graphql", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/graphql",
+      "destination": "https://prelura.com/graphql/"
+    }
+  ]
+}
