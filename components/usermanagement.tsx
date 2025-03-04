@@ -1,54 +1,88 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  dateJoined: string;
+  activeListings: number;
+  totalListings: number;
+  totalSales: number;
+  totalShopValue: number;
+  thumbnailUrl: string;
+}
+
+interface GraphQLResponse {
+  data: {
+    userAdminStats: User[];
+  };
+}
 
 export default function UserManagement() {
-  const users = [
-    {
-      username: "ByeWind",
-      dateJoined: "Jun 24, 2025",
-      listings: 15,
-      listingsLifetime: 947,
-      totalMade: "£942.00",
-      shopValue: "£500",
-      bgColor: "bg-[#EDEEFC]",
-    },
-    {
-      username: "Natali Craig",
-      dateJoined: "Mar 10, 2025",
-      listings: 25,
-      listingsLifetime: 47,
-      totalMade: "£881.00",
-      shopValue: "£1025",
-      bgColor: "bg-[#E6F1FD]",
-    },
-    {
-      username: "Drew Cano",
-      dateJoined: "Nov 10, 2025",
-      listings: 35,
-      listingsLifetime: 102,
-      totalMade: "£409.00",
-      shopValue: "£750",
-      bgColor: "bg-[#EDEEFC]",
-    },
-    {
-      username: "Orlando Diggs",
-      dateJoined: "Dec 20, 2025",
-      listings: 50,
-      listingsLifetime: 1222,
-      totalMade: "£953.00",
-      shopValue: "£4766",
-      bgColor: "bg-[#E6F1FD]",
-    },
-    {
-      username: "Andi Lane",
-      dateJoined: "Jul 25, 2025",
-      listings: 40,
-      listingsLifetime: 400,
-      totalMade: "£9070.00",
-      shopValue: "£907",
-      bgColor: "bg-[#EDEEFC]",
-    },
-  ];
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
+    console.log("Stored token:", storedToken);
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    async function fetchUsers() {
+      try {
+        const response = await fetch("https://prelura.com/graphql/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            query:
+              "{ userAdminStats { id username thumbnailUrl dateJoined activeListings totalListings totalSales totalShopValue } }",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data: GraphQLResponse = await response.json();
+        setUsers(data.data.userAdminStats);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, [token]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); 
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className="flex flex-col items-center p-4 sm:p-6">
@@ -77,22 +111,24 @@ export default function UserManagement() {
         <div className="space-y-2 mt-4 text-sm min-w-[600px]">
           {users.map((user, index) => (
             <div
-              key={index}
-              className={`grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 p-3 rounded-lg ${user.bgColor}`}
+              key={user.id}
+              className={`grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 p-3 rounded-lg ${
+                index % 2 === 0 ? "bg-[#EDEEFC]" : "bg-[#E6F1FD]"
+              }`}
             >
               <Image
-                src="/tableicon.svg"
+                src={user.thumbnailUrl}
                 width={20}
                 height={20}
-                alt="table icon"
-                className="w-5 h-5"
+                alt="user"
+                className="w-5 h-5 rounded-full"
+                loading="lazy"
               />
-
               <span>{user.username}</span>
-              <span>{user.dateJoined}</span>
-              <span>{user.listings}</span>
-              <span>{user.totalMade}</span>
-              <span>{user.shopValue}</span>
+              <span>{formatDate(user.dateJoined)}</span>
+              <span>{user.activeListings}</span>
+              <span>{user.totalSales}</span>
+              <span>{user.totalShopValue}</span>
             </div>
           ))}
         </div>

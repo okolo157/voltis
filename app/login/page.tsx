@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   interface LoginFormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -16,9 +18,48 @@ export default function LoginPage() {
     readonly elements: LoginFormElements;
   }
 
-  const handleSubmit = (event: React.FormEvent<LoginFormElement>) => {
+  const getAuthToken = async (username: string, password: string) => {
+    try {
+      const response = await fetch("https://prelura.com/graphql/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `mutation AdminLogin($username: String!, $password: String!) { 
+          adminLogin(username: $username, password: $password) { 
+            token 
+          } 
+        }`,
+          variables: { username, password },
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.errors) {
+        return { error: data.errors[0].message };
+      }
+      return { token: data.data.adminLogin.token };
+    } catch (err: unknown) {
+      return { error: err instanceof Error ? err.message : String(err) };
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<LoginFormElement>) => {
     event.preventDefault();
-    router.push("/dashboard");
+
+    const form = event.currentTarget;
+    const username = form.elements.username.value;
+    const password = form.elements.password.value;
+
+    const result = await getAuthToken(username, password);
+
+    if (result.token) {
+      localStorage.setItem("authToken", result.token);
+      console.log("Auth Token stored:", result.token);
+      router.push("/dashboard");
+    } else {
+      setError(result.error);
+    }
   };
 
   return (
@@ -41,6 +82,7 @@ export default function LoginPage() {
             <input
               type="text"
               id="username"
+              name="username"
               className="w-full p-2 bg-[#D9D9D966] rounded-md focus:outline-none focus:ring-2 focus:ring-[#AB28B2]"
               required
             />
@@ -55,6 +97,7 @@ export default function LoginPage() {
             <input
               type="password"
               id="password"
+              name="password"
               className="w-full p-2 bg-[#D9D9D966] rounded-md focus:outline-none focus:ring-2 focus:ring-[#AB28B2]"
               required
             />
@@ -78,10 +121,12 @@ export default function LoginPage() {
             <input
               type="text"
               id="captcha-text"
+              name="captcha-text"
               className="w-full p-2 bg-[#D9D9D966] rounded-md focus:outline-none focus:ring-2 focus:ring-[#AB28B2]"
               required
             />
           </div>
+          {error && <div className="text-red-500 text-sm mb-3">{error}</div>}
           <button
             type="submit"
             className="w-full bg-[#AB28B2] ease-in-out text-white p-3 rounded-lg hover:bg-[#702b74] transition cursor-pointer"
