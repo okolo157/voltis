@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Mainsection from "@/components/mainsection";
 import Usermanagement from "@/components/usermanagement";
 import Listings from "@/components/listings";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [activeComponent, setActiveComponent] = useState("overview");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
@@ -18,6 +20,16 @@ export default function Dashboard() {
     blog: false,
     social: false,
   });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router]);
 
   // Toggle section expansion
   interface ExpandedSections {
@@ -59,6 +71,10 @@ export default function Dashboard() {
         return <Mainsection />;
     }
   };
+
+  if (!isAuthenticated) {
+    return null; 
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-white text-black">
@@ -203,7 +219,9 @@ export default function Dashboard() {
                   className={`ml-10 p-2 text-[14px] cursor-pointer hover:bg-gray-100 rounded-lg ${
                     activeComponent === "userMgmt" ? "bg-gray-200" : ""
                   }`}
-                  onClick={() => handleComponentChange({ component: "userMgmt" })}
+                  onClick={() =>
+                    handleComponentChange({ component: "userMgmt" })
+                  }
                 >
                   User Management
                 </div>
@@ -239,7 +257,9 @@ export default function Dashboard() {
                   className={`ml-10 p-2 text-[14px] cursor-pointer hover:bg-gray-100 rounded-lg ${
                     activeComponent === "listings" ? "bg-gray-200" : ""
                   }`}
-                  onClick={() => handleComponentChange({ component: "listings" })}
+                  onClick={() =>
+                    handleComponentChange({ component: "listings" })
+                  }
                 >
                   All Listings
                 </div>
@@ -290,10 +310,26 @@ export default function Dashboard() {
             )}
 
             {[
-              { id: "account" as keyof ExpandedSections, icon: "/account.svg", label: "Account" },
-              { id: "corporate" as keyof ExpandedSections, icon: "/corporate.svg", label: "Corporate" },
-              { id: "blog" as keyof ExpandedSections, icon: "/blog.svg", label: "Blog" },
-              { id: "social" as keyof ExpandedSections, icon: "/social.svg", label: "Social" },
+              {
+                id: "account" as keyof ExpandedSections,
+                icon: "/account.svg",
+                label: "Account",
+              },
+              {
+                id: "corporate" as keyof ExpandedSections,
+                icon: "/corporate.svg",
+                label: "Corporate",
+              },
+              {
+                id: "blog" as keyof ExpandedSections,
+                icon: "/blog.svg",
+                label: "Blog",
+              },
+              {
+                id: "social" as keyof ExpandedSections,
+                icon: "/social.svg",
+                label: "Social",
+              },
             ].map((item) => (
               <div key={item.id}>
                 <div
@@ -329,8 +365,6 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
-       
       </aside>
 
       <main className="flex-1 p-4 flex flex-col gap-7 overflow-y-auto">
